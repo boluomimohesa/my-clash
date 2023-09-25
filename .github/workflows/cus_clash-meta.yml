@@ -1,0 +1,58 @@
+name: BUILD CLASH META
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 4"
+  push:
+    branches:
+      - master
+
+permissions:
+   contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+
+      - name: Checkout Self
+        uses: actions/checkout@v4
+
+      - name: Checkout MetaCubeX/Clash.Meta
+        uses: actions/checkout@v4
+        with:
+          repository: MetaCubeX/Clash.Meta
+          ref: Meta
+          path: meta
+
+      - name: Set variables
+        run: |
+          cd meta || exit 1
+          git fetch -t 
+          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: build clash-meta
+        run: |
+          cd meta || exit 1
+          go mod download
+          GOARCH=arm64 GOOS=linux CGO_ENABLED=0 go build -tags "no_fake_tcp" -trimpath -ldflags \
+          "-X 'github.com/Dreamacro/clash/constant.Version=${VERSION}' \
+          -X 'github.com/Dreamacro/clash/constant.BuildTime=$(date -Ru)' \
+          -w -s -buildid="
+
+      - name: Update
+        run: |
+          rm -rf bin/clash.meta/*
+          gzip -fc meta/clash > bin/clash.meta/clash-linux-armv8.gz
+          rm -rf meta
+
+      - name: Commit and push
+        run: |
+          git config --global user.email "boluomimohesa@outlook.com" && git config --global user.name "Bot"
+          git add . && git commit -m "更新Meta内核至${VERSION}" || exit 0
+          git push
