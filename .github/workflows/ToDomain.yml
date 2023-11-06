@@ -27,6 +27,7 @@ jobs:
           echo "facebookUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Facebook/Facebook.yaml" >> $GITHUB_ENV
           echo "twitterUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml" >> $GITHUB_ENV
           echo "bingUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Bing/Bing.yaml" >> $GITHUB_ENV
+          echo "proxyUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list" >> $GITHUB_ENV
         shell: bash
 
       - name: Checkout v2fly/domain-list-community
@@ -34,6 +35,12 @@ jobs:
         with:
           repository: v2fly/domain-list-community
           path: community
+
+      - name: Checkout cokebar/gfwlist2dnsmasq
+        uses: actions/checkout@v4
+        with:
+          repository: cokebar/gfwlist2dnsmasq
+          path: gfwlist2dnsmasq
       
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -43,7 +50,7 @@ jobs:
 
       - name: To Domain file
         env:
-          filterDomain: grep -E "^(  - DOMAIN,|  - DOMAIN-SUFFIX,)" | sed "s/^  - DOMAIN,//g"  | sed "s/^  - DOMAIN-SUFFIX,/\+\./"
+          filterDomain: grep -E "^(  - DOMAIN,|  - DOMAIN-SUFFIX,)" | sed "s/^  - DOMAIN,//g"  | sed "s/^  - DOMAIN-SUFFIX,/+./g"
         run: |
           mkdir -p publish
           cd publish || exit 1
@@ -67,6 +74,19 @@ jobs:
         run: |
           cd data-list || exit 1
           cat category-dev.txt | ${{ env.filterDomain }} > ../publish/category-dev.txt
+
+      - name: Merge Proxy
+        env:
+          filterList: grep -E "^(DOMAIN,|DOMAIN-SUFFIX)" | sed "s/^DOMAIN,//g" | sed "s/^DOMAIN-SUFFIX,/+./g"
+        run: |
+          cd gfwlist2dnsmasq || exit 1
+          chmod +x ./gfwlist2dnsmasq.sh
+          ./gfwlist2dnsmasq.sh -l -o gfwlist.txt
+          cd ../
+          mkdir -p merge
+          cd merge || exit 1
+          curl -sSL ${proxyUrl} | ${{ env.filterList }} > proxy.txt
+          cat proxy.txt gfwlist.txt | sort | uniq > ../publish/proxy.txt
 
       - name: Merge Openai
         env:
