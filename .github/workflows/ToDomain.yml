@@ -117,8 +117,9 @@ jobs:
         env:
           filterList: grep -E "^(DOMAIN,|DOMAIN-SUFFIX)" | sed "s/^DOMAIN,//g" | sed "s/^DOMAIN-SUFFIX,/+./g"
         run: |
-          curl -sSL ${binanceUrl} | ${{ env.filterList }} > ../publish/c2c.txt
-          curl -sSL ${okxUrl} | ${{ env.filterList }} >> ../publish/c2c.txt
+          cd publish || exit 1
+          curl -sSL ${binanceUrl} | ${{ env.filterList }} > c2c.txt
+          curl -sSL ${okxUrl} | ${{ env.filterList }} >> c2c.txt
 
       - name: Git push assets to "release" branch
         run: |
