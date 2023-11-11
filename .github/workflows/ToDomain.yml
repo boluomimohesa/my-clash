@@ -28,6 +28,8 @@ jobs:
           echo "twitterUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml" >> $GITHUB_ENV
           echo "bingUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Bing/Bing.yaml" >> $GITHUB_ENV
           echo "proxyUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list" >> $GITHUB_ENV
+          echo "binanceUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Binance/Binance.list" >> $GITHUB_ENV
+          echo "okxUrl=https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OKX/OKX.list" >> $GITHUB_ENV 
         shell: bash
 
       - name: Checkout v2fly/domain-list-community
@@ -110,6 +112,13 @@ jobs:
           curl -sSL ${twitterUrl} | ${{ env.filterDomain }} >> social.txt
           cat social.txt | sort | uniq > ../publish/social.txt
           rm -rf ../merge
+
+      - name: Merge C2c
+        env:
+          filterList: grep -E "^(DOMAIN,|DOMAIN-SUFFIX)" | sed "s/^DOMAIN,//g" | sed "s/^DOMAIN-SUFFIX,/+./g"
+        run: |
+          curl -sSL ${binanceUrl} | ${{ env.filterList }} > ../publish/c2c.txt
+          curl -sSL ${okxUrl} | ${{ env.filterList }} >> ../publish/c2c.txt
 
       - name: Git push assets to "release" branch
         run: |
