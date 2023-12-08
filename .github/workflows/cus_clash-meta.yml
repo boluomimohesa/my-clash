@@ -40,15 +40,15 @@ jobs:
         run: |
           cd meta || exit 1
           go mod download
-          GOARCH=arm64 GOOS=linux CGO_ENABLED=0 go build -tags "no_fake_tcp" -trimpath -ldflags \
-          "-X 'github.com/Dreamacro/clash/constant.Version=${VERSION}' \
-          -X 'github.com/Dreamacro/clash/constant.BuildTime=$(date -Ru)' \
+          GOARCH=arm64 GOOS=linux CGO_ENABLED=0 go build -tags "no_fake_tcp with_low_memory" -trimpath -ldflags \
+          "-X 'github.com/metacubex/mihomo/constant.Version=$(VERSION)' \
+          -X 'github.com/metacubex/mihomo/constant.BuildTime=$(date -Ru)' \
           -w -s -buildid="
 
       - name: Update
         run: |
           rm -rf bin/clash.meta/*
-          gzip -fc meta/clash > bin/clash.meta/clash-linux-armv8.gz
+          gzip -fc meta/mihomo > bin/clash.meta/clash-linux-armv8.gz
           rm -rf meta
 
       - name: Commit and push
