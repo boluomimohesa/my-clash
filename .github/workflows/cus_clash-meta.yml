@@ -41,7 +41,7 @@ jobs:
           cd meta || exit 1
           unixtimePath="../bin/clash.meta/unixtime"
           unixTime=$(git log -n 1 --format="%at")
-          if [ -e "$unixtimePath" ] && [ $(grep -Eq "unixtime=.*" "$unixtimePath") ]; then
+          if [ -e "$unixtimePath" ] && grep -Eq "unixtime=.*" "$unixtimePath"; then
             curUnixTime=$(awk -F= '{print $2}' "$unixtimePath")
             echo "cur:${curUnixTime} new:${unixTime}"
             [[ "$curUnixTime" -le "$unixTime" ]] && exit 1
