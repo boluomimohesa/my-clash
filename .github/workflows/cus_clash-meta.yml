@@ -29,6 +29,16 @@ jobs:
           ref: Meta
           path: meta
 
+      - name: Update Unix Time
+        run: |
+          curUnixTime=$(awk -f "=" "{print $2}"./bin/unixtime)
+          unixTime=$(git log -n 1 --format="%at")
+          if [[ -s curUnixTime ]]; then
+            sed -i 's/unixTime=.*/unixTime=${unixTime}/' ./bin/unixtime
+          elif [[ curUnixTime <= unixTime ]]; then
+            exit 1
+          fi
+
       - name: Set variables
         run: |
           cd meta || exit 1
