@@ -38,10 +38,11 @@ jobs:
         
       - name: Update Unix Time
         run: |
-          unixtimePath="./bin/unixtime"
+          cd meta || exit 1
+          unixtimePath="../bin/clash.meta/unixtime"
           unixTime=$(git log -n 1 --format="%at")
-          if [[ -e ./bin/unixTime && $(grep -Eq "unixTime=[^[:space:]]+" "$unixtimePath") ]]; then
-            curUnixTime=$(awk -F "=" "{print $2}"./bin/unixtime)
+          if [[ -e "$unixtimePath" && $(grep -Eq "unixTime=[^[:space:]]+" "$unixtimePath") ]]; then
+            curUnixTime=$(awk -F "=" "{print $2}""$unixtimePath")
             echo "cur:${curUnixTime} new:${unixTime}"
             [[ "$curUnixTime" -le "$unixTime" ]] && exit 1
           else
