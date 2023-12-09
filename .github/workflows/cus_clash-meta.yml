@@ -14,10 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # - name: Setup Go
-      #   uses: actions/setup-go@v4
-      #   with:
-      #     go-version: 'stable'
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
 
       - name: Checkout Self
         uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
           echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
         shell: bash
         
-      - name: Update Unix Time
+      - name: is Update
         run: |
           cd meta || exit 1
           unixtimePath="../bin/clash.meta/unixtime"
