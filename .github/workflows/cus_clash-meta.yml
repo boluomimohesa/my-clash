@@ -29,6 +29,13 @@ jobs:
           ref: Meta
           path: meta
 
+      - name: Set variables
+        run: |
+          cd meta || exit 1
+          git fetch -t 
+          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        shell: bash
+        
       - name: Update Unix Time
         run: |
           unixtimePath="./bin/unixtime"
@@ -40,13 +47,6 @@ jobs:
           else
             sed -i 's/unixTime=.*/unixTime=${unixTime}/' "$unixtimePath"
           fi
-
-      - name: Set variables
-        run: |
-          cd meta || exit 1
-          git fetch -t 
-          echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-        shell: bash
 
       - name: build clash-meta
         run: |
