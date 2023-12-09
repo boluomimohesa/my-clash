@@ -14,10 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 'stable'
+      # - name: Setup Go
+      #   uses: actions/setup-go@v4
+      #   with:
+      #     go-version: 'stable'
 
       - name: Checkout Self
         uses: actions/checkout@v4
@@ -42,11 +42,14 @@ jobs:
           unixtimePath="../bin/clash.meta/unixtime"
           unixTime=$(git log -n 1 --format="%at")
           if [ -e "$unixtimePath" ] && [ $(grep -Eq "unixtime=.*" "$unixtimePath") ]; then
-            curUnixTime=$(awk -F "=" "{print $2}""$unixtimePath")
+            curUnixTime=$(awk -F= '{print $2}' "$unixtimePath")
             echo "cur:${curUnixTime} new:${unixTime}"
             [[ "$curUnixTime" -le "$unixTime" ]] && exit 1
+            exit 1
           else
-            sed -i 's/unixTime=.*/unixTime=${unixTime}/' "$unixtimePath"
+            echo "失败"
+            exit 1
+            # sed -i 's/unixTime=.*/unixTime=${unixTime}/' "$unixtimePath"
           fi
 
       - name: build clash-meta
