@@ -43,7 +43,7 @@ jobs:
           if [[ -e ./bin/unixTime && grep -Eq "unixTime=[^[:space:]]+" "$unixtimePath"  ]]; then
             curUnixTime=$(awk -F "=" "{print $2}"./bin/unixtime)
             echo "cur:${curUnixTime} new:${unixTime}"
-            [[ curUnixTime -le unixTime ]] && exit 1
+            [[ "$curUnixTime" -le "$unixTime" ]] && exit 1
           else
             sed -i 's/unixTime=.*/unixTime=${unixTime}/' "$unixtimePath"
           fi
