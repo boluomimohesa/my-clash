@@ -31,12 +31,14 @@ jobs:
 
       - name: Update Unix Time
         run: |
-          curUnixTime=$(awk -f "=" "{print $2}"./bin/unixtime)
+          unixtimePath="./bin/unixtime"
           unixTime=$(git log -n 1 --format="%at")
-          if [[ -s curUnixTime ]]; then
-            sed -i 's/unixTime=.*/unixTime=${unixTime}/' ./bin/unixtime
-          elif [[ curUnixTime <= unixTime ]]; then
-            exit 1
+          if [[ -e ./bin/unixTime && grep -Eq "unixTime=[^[:space:]]+" "$unixtimePath"  ]]; then
+            curUnixTime=$(awk -f "=" "{print $2}"./bin/unixtime)
+            echo "cur:${curUnixTime} new:${unixTime}"
+            [[ curUnixTime <= unixTime ]] && exit 1
+          else
+            sed -i 's/unixTime=.*/unixTime=${unixTime}/' "$unixtimePath"
           fi
 
       - name: Set variables
