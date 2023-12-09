@@ -34,9 +34,9 @@ jobs:
           unixtimePath="./bin/unixtime"
           unixTime=$(git log -n 1 --format="%at")
           if [[ -e ./bin/unixTime && grep -Eq "unixTime=[^[:space:]]+" "$unixtimePath"  ]]; then
-            curUnixTime=$(awk -f "=" "{print $2}"./bin/unixtime)
+            curUnixTime=$(awk -F "=" "{print $2}"./bin/unixtime)
             echo "cur:${curUnixTime} new:${unixTime}"
-            [[ curUnixTime <= unixTime ]] && exit 1
+            [[ curUnixTime -le unixTime ]] && exit 1
           else
             sed -i 's/unixTime=.*/unixTime=${unixTime}/' "$unixtimePath"
           fi
