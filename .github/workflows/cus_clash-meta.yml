@@ -43,11 +43,10 @@ jobs:
           unixTime=$(git log -n 1 --format="%at")
           curUnixTime=$(awk -F= '{print $2}' "$unixtimePath")
           echo "cur:${curUnixTime} new:${unixTime}"
-          if [[ -e "$unixtimePath" ]]; then
+          if [[ -e "$unixtimePath" && grep -Eq "unixtime=.*" "$unixtimePath" ]]; then
             curUnixTime=$(awk -F= '{print $2}' "$unixtimePath")
             echo "cur:${curUnixTime} new:${unixTime}"
             [[ "$curUnixTime" -le "$unixTime" ]] && exit 1
-            echo "成功"
           else
             echo "失败"
             exit 1
