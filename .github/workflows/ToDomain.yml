@@ -125,8 +125,8 @@ jobs:
         run: |
           mkdir -p merge
           cd merge || exit 1
-          curl -sSL ${ trackerUrl } | ${{ env.filterList }} > tracker.txt
-          curl -sSL ${ tracker2Url } | ${{ env.filterTracker }} >> tracker.txt
+          curl -sSL ${trackerUrl} | ${{ env.filterList }} > tracker.txt
+          curl -sSL ${tracker2Url} | ${{ env.filterTracker }} >> tracker.txt
           cat tracker.txt | sort --ignore-case -u > ../publish/tracker.txt
           rm -rf ../merge
 
