@@ -10,10 +10,6 @@ on:
 permissions:
   contents: write
 
-env:
-  filterDomain: grep -E "^(  - DOMAIN,|  - DOMAIN-SUFFIX,)" | sed "s/^  - DOMAIN,//g"  | sed "s/^  - DOMAIN-SUFFIX,/+./g"  
-  filterList: grep -E "^(DOMAIN,|DOMAIN-SUFFIX)" | sed "s/^DOMAIN,//g" | sed "s/^DOMAIN-SUFFIX,/+./g"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -78,6 +74,8 @@ jobs:
           cd ../ && rm -rf community
       
       - name: Community To Domain
+        env:
+          filterDomain: grep -E "^(domain|full)" | sed "s/domain:/+./g" | sed "s/full://g" | sort --ignore-case -u
         run: |
           cd data-list || exit 1
           cat category-dev.txt | ${{ env.filterDomain }} > ../publish/category-dev.txt
